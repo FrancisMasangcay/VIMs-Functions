@@ -12,7 +12,7 @@ const { json } = require('express');
 const { Message } = require('firebase-functions/lib/providers/pubsub');
 
 const { getPerformance, getTransactions} = require('./handlers/reads');
-const { signUp, login } = require('./handlers/users');
+const { signUp, login, getAuthenticatedUser } = require('./handlers/users');
 const FBAuth = require('./util/fbAuth');
 const placeOrder = require('./handlers/placeOrder');
 const updateFunc = require('./handlers/updateInfo');
@@ -21,6 +21,7 @@ const recordPerformanceFunc = require('./handlers/recordPerformance');
 /**
  * GET ROUTES
  */
+
 /**
  *  request schema:
  *  req.body = { }
@@ -68,6 +69,8 @@ app.get('/performance', FBAuth, getPerformance)
  *  }
  */
 app.get('/transactions', FBAuth, getTransactions)
+
+app.get('/user', FBAuth, getAuthenticatedUser);
 
 /**
  * POST ROUTES

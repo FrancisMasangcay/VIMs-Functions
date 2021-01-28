@@ -40,8 +40,10 @@ exports.signUp = (req, res) => {
     errors.password = "passwords must match";
 
   //checks if there were any errors and outputs them
+  console.log(Object.keys(errors).length);
+  console.log("errors, ", errors);
   if(Object.keys(errors).length > 0)
-    return res.status(400).json({errors}); 
+    return res.status(400).json(errors); 
 
   db.doc(`/users/${newUser.username}`).get()
     .then((doc) => {
@@ -84,7 +86,7 @@ exports.signUp = (req, res) => {
     })
     .catch((err) => {
       if(err.code === "auth/email-already-in-use"){
-        return res.status(400).json({error: "email is already in use"});
+        return res.status(400).json({email: "email is already in use"});
       }
       return res.status(500).json({ error: err.code});
     })
@@ -103,7 +105,7 @@ exports.login = (req, res) => {
   if(!isEmail(user.email)) errors.email = "Please enter a valid email address";
 
   if(Object.keys(errors).length > 0)
-    return res.status(400).json({errors}); 
+    return res.status(400).json(errors); 
 
   //signing in with firebase
   firebase.auth().signInWithEmailAndPassword(user.email, user.password)
@@ -114,9 +116,53 @@ exports.login = (req, res) => {
       return res.json({token});
     })
     .catch((err) => {
-      if(err.code === "auth/wrong-password"){
+      if(err.code === "auth/wrong-password" || err.code === "auth/user-not-found"){
         res.status(403).json({ general: "Invalid credentails, please try again"});
       } else return res.status(500).json({ error: err.code});
       console.error(err);
     })
   }
+
+  // Get own user details
+exports.getAuthenticatedUser = (req, res) => {
+  let userData = {};
+  const userRef = db.doc(`/users/${req.user.username}`);
+  userRef.get()
+    .then((doc) => {
+      if (doc.exists) {
+        userData.credentials = doc.data();
+        console.log("Credentials ", userData.credentials)
+        return userRef.collection('holdings')
+          .get();
+      }
+    })
+    .then((data) => {
+      userData.holdings = [];
+      data.forEach((doc) => {
+        userData.holdings.push(doc.data());
+      });
+      return userRef
+        .collection("transactions")
+        .orderBy('date', 'desc')
+        .limit(10)
+        .get();
+    })
+    .then((data) => {
+      userData.transactions = [];
+      data.forEach((doc) => {
+        userData.transactions.push({
+          order: doc.data().order,
+          shares: doc.data().shares,
+          date: doc.data().date,
+          symbol: doc.data().symbol,
+          value: doc.data().value,
+        });
+      });
+      console.log("Resulting UserData, ", userData)
+      return res.json(userData);
+    })
+    .catch((err) => {
+      console.error(err);
+      return res.status(500).json({ error: err.code });
+    });
+};
