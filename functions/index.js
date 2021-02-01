@@ -17,6 +17,7 @@ const FBAuth = require('./util/fbAuth');
 const placeOrder = require('./handlers/placeOrder');
 const updateFunc = require('./handlers/updateInfo');
 const recordPerformanceFunc = require('./handlers/recordPerformance');
+const { getQuote } = require('./util/helpers');
 
 /**
  * GET ROUTES
@@ -46,6 +47,13 @@ const recordPerformanceFunc = require('./handlers/recordPerformance');
  */
 app.get('/updateInfo', FBAuth, updateFunc.updateInfo)
 
+//get authenticated user details to load profile page
+app.get('/user', FBAuth, getAuthenticatedUser);
+
+/**
+ * POST ROUTES
+ */
+
 /**
  *  returns n most recent performance records
  *  takes in number of records requested and username
@@ -56,7 +64,7 @@ app.get('/updateInfo', FBAuth, updateFunc.updateInfo)
  *    numRecords: 31
  *  }
  */
-app.get('/performance', FBAuth, getPerformance)
+app.post('/view-performance', FBAuth, getPerformance)
 
 /**
  *  returns n most recent transactions
@@ -68,13 +76,17 @@ app.get('/performance', FBAuth, getPerformance)
  *    numRecords: 31
  *  }
  */
-app.get('/transactions', FBAuth, getTransactions)
+app.post('/view-transactions', FBAuth, getTransactions)
 
-app.get('/user', FBAuth, getAuthenticatedUser);
 
-/**
- * POST ROUTES
- */
+//look up a stock symbol for price req.body { symbol: "TSLA"}
+app.post('/lookup', FBAuth, (req, res) => {
+  getQuote(req.body.symbol)
+    .then((quote) => {
+      return res.status(200).json(quote);
+    })
+    .catch( err => res.status(500).json({errors: err.message}))
+});
 
  /**
   *  signup route

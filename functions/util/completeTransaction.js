@@ -48,7 +48,7 @@
         if(acctCash >= total){
           newAmmount = acctCash - total;
           newShares = holdings + order.shares;
-          _message.msg = `Buy order complete, bought ${order.shares} shares of ${order.symbol} `;
+          _message.msg = `Buy order complete: bought ${order.shares} share(s) of ${order.symbol} `;
           let transaction = {
             symbol: order.symbol,
             date: new Date().toISOString(),
@@ -59,7 +59,7 @@
           await tRef.add(transaction).catch((error) => {_message.msg = error.code});
         }
         else{
-          _message.msg = "Lacking Funds";
+          _message.msg = "Lacking funds in account";
           failed = true;
         }
       }
@@ -67,7 +67,7 @@
         if(holdings >= order.shares){
           newAmmount = acctCash + total;
           newShares = holdings - order.shares;
-          _message.msg = `Sell order complete, sold ${order.shares} shares of ${order.symbol} `;
+          _message.msg = `Sell order complete: sold ${order.shares} share(s) of ${order.symbol} `;
           let transaction = {
             symbol: order.symbol,
             date: new Date().toISOString(),
@@ -78,7 +78,7 @@
           await tRef.add(transaction).catch((error) => {_message.msg = error.code});
         }
         else{
-          _message.msg = "Lacking shares";
+          _message.msg = "Lacking shares in account";
           failed = true;
         }
       }

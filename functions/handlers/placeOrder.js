@@ -2,6 +2,10 @@ const tFunc = require('../util/completeTransaction');
 const { getQuote } = require('../util/helpers')
 
 module.exports= async (req, res) => {
+  //validate the request data
+  if(req.body.symbol == "")
+    return res.status(400).json({symbol: 'Must not be empty'});
+
   let order = {};
   let result = await getQuote(`${req.body.symbol}`).catch((err) => {console.log(err)});
   order.price = result.price;

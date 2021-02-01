@@ -158,6 +158,16 @@ exports.getAuthenticatedUser = (req, res) => {
           value: doc.data().value,
         });
       });
+      return userRef.collection('performance').orderBy('date', 'desc').get();
+    })
+    .then((data) => {
+      userData.performance = [];
+      data.forEach((doc) => {
+        userData.performance.push({
+          date: doc.data().date,
+          endingValue: doc.data().endingValue
+        })
+      });
       console.log("Resulting UserData, ", userData)
       return res.json(userData);
     })

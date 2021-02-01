@@ -45,7 +45,8 @@ exports.getQuote = (symbol) => {
       if (response.error) return reject(response.error);
       let result = {
         price: response.body.price.regularMarketPrice.raw,
-        type: response.body.quoteType.quoteType
+        type: response.body.quoteType.quoteType,
+        symbol
       };
       return resolve(result);
     });
