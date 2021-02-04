@@ -13,7 +13,7 @@ module.exports = {
   
     //save the user document information: allocation & cash
     let alloc = snapshots[0].data().allocation;
-    let cash = snapshots[0].data().cash; 
+    let acctcash = snapshots[0].data().cash; 
     let holdings = []; //save holdings into array of objects
   
     //check if there are documents in holdings
@@ -32,7 +32,7 @@ module.exports = {
       }
     }
     //calculate total account value
-    let totalValue = cash;
+    let totalValue = acctcash;
     // console.log("cash: ", cash);
     let stock = 0;
     for(let i = 0; i < holdings.length; i++){
@@ -44,20 +44,11 @@ module.exports = {
     }
   
     //calculate new account allocation
-    alloc.liquid = Math.round((cash / totalValue) * 100);
+    alloc.liquid = Math.round((acctcash / totalValue) * 100);
     alloc.stock = Math.round((stock / totalValue) * 100);
     alloc.mutualFunds = 100 - alloc.liquid - alloc.stock;
-    // console.log("allocation: ", alloc);
-    // console.log("stock: ", stock);
-    // console.log("totalValue: ", totalValue);
     //update allocation on firestore
-    let data = {
-      accountValue: totalValue,
-      allocation: alloc,
-      securities: holdings 
-    }
     await userRef.update({allocation: alloc})
-      .then(() => res.status(200).json(data))
       .catch((error) => res.status(500).json(error));
   }
 }

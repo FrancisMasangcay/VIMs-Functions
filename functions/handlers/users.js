@@ -124,13 +124,37 @@ exports.login = (req, res) => {
   }
 
   // Get own user details
+  /**
+   *  returns all holdings, all transactions ordered by date, and all performance ordered 
+   *  by date
+   * 
+   *  userData : {
+   *  performance:[],
+   *  holdings: [],
+   *  credentials: {
+   *    cash: 100,
+   *    allocation: {
+   *      cash: 96,
+   *      stock: 2,
+   *      mutualFunds: 2
+   *    }
+   *    first,
+   *    last,
+   *    userId
+   *    
+   *  }
+   * }
+   */
 exports.getAuthenticatedUser = (req, res) => {
-  let userData = {};
+  let userData = {
+    credentials: {}
+  };
   const userRef = db.doc(`/users/${req.user.username}`);
   userRef.get()
     .then((doc) => {
       if (doc.exists) {
-        userData.credentials = doc.data();
+        userData.credentials.cash = doc.data().cash;
+        userData.credentials.allocation = doc.data().allocation;
         console.log("Credentials ", userData.credentials)
         return userRef.collection('holdings')
           .get();

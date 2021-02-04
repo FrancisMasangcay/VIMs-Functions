@@ -6,6 +6,20 @@ module.exports= async (req, res) => {
   if(req.body.symbol == "")
     return res.status(400).json({symbol: 'Must not be empty'});
 
+  //check if it is a valid trading time and day
+  let date = new Date();
+  let day = date.getDay();
+  
+  if(day < 1 || day > 5 )
+    return res.status(400).json({msg: "Markets are closed today. Please try again on a valid trading day."})
+
+  let timeHrs = date.getUTCHours()
+  let timeMin = date.getUTCMinutes()
+  let hrsMinutes = timeHrs + (timeMin / 60);
+
+  if( hrsMinutes < 14.5 || hrsMinutes >= 21 )
+    return res.status(400).json({msg: "Markets are closed at this hour. Please try again during valid trading hours."})
+
   let order = {};
   let result = await getQuote(`${req.body.symbol}`).catch((err) => {console.log(err)});
   order.price = result.price;

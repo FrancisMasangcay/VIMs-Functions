@@ -84,7 +84,7 @@
       }
     
       if(!failed){
-        //update firestore
+        //update firestore with the order
         const p2 = [userRef.update({cash: newAmmount})]
         if(hIsEmpty){
           let newHolding = {
@@ -103,6 +103,7 @@
         }
         await Promise.all(p2).catch((error) => {_message.msg = error});
       }
+
       return new Promise((resolve, reject) =>{
         if(failed)
           reject(_message);

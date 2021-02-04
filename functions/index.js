@@ -15,10 +15,9 @@ const { getPerformance, getTransactions} = require('./handlers/reads');
 const { signUp, login, getAuthenticatedUser } = require('./handlers/users');
 const FBAuth = require('./util/fbAuth');
 const placeOrder = require('./handlers/placeOrder');
-const updateFunc = require('./handlers/updateInfo');
 const recordPerformanceFunc = require('./handlers/recordPerformance');
 const { getQuote } = require('./util/helpers');
-
+const updateFunc = require('./handlers/updateInfo');
 /**
  * GET ROUTES
  */
@@ -28,22 +27,7 @@ const { getQuote } = require('./util/helpers');
  *  req.body = { }
  * 
  *  runs firestore queries to update account allocation and update holding values
- *  returns account information:
- *  {
- *    accountTotalValue: 10000,
- *    allocation: {
- *      stock: 90,
- *      liquid: 2,
- *      mutualFund: 8
- *    },
- *    securities: [
- *      {
- *        symbol: TSLA,
- *        price: 845,
- *        numShares: 5
- *      },
- *    ]
- *  }
+ *  
  */
 app.get('/updateInfo', FBAuth, updateFunc.updateInfo)
 
@@ -134,7 +118,9 @@ app.post('/order', FBAuth, placeOrder)
  *  updates accountValue and then posts to the performance
  *  collection a new document detailing the end of day value
  *  of an account
- */
-app.post('/performance', FBAuth, recordPerformanceFunc.performance)
+//  */
 
 exports.api = functions.https.onRequest(app);
+exports.recordPerformance = functions.pubsub.schedule('30 17 * * *').onRun(() => {
+  return recordPerformanceFunc.performance;
+})
