@@ -138,9 +138,8 @@ exports.login = (req, res) => {
    *      cash: 96,
    *      stock: 2,
    *      mutualFunds: 2
-   *    }
-   *    
-   *    
+   *    },
+   *    hasDoneTutorial: true | false
    *  }
    * }
    */
@@ -154,6 +153,7 @@ exports.getAuthenticatedUser = (req, res) => {
       if (doc.exists) {
         userData.credentials.cash = doc.data().cash;
         userData.credentials.allocation = doc.data().allocation;
+        userData.credentials.hasDoneTutorial = doc.data().hasDoneTutorial;
         console.log("Credentials ", userData.credentials)
         return userRef.collection('holdings')
           .get();
