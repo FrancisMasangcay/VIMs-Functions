@@ -75,7 +75,8 @@ exports.signUp = (req, res) => {
         allocation: {
           stock: 0,
           cash: 100
-        }
+        },
+        hasDoneTutorial: false,
       };
       
       //creates the new doc in firebase
@@ -138,9 +139,7 @@ exports.login = (req, res) => {
    *      stock: 2,
    *      mutualFunds: 2
    *    }
-   *    first,
-   *    last,
-   *    userId
+   *    
    *    
    *  }
    * }

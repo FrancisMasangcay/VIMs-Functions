@@ -18,6 +18,7 @@ const placeOrder = require('./handlers/placeOrder');
 const recordPerformanceFunc = require('./handlers/recordPerformance');
 const { getQuote } = require('./util/helpers');
 const updateFunc = require('./handlers/updateInfo');
+const hasDoneTutorial = require('./handlers/hasDoneTutorial');
 /**
  * GET ROUTES
  */
@@ -110,6 +111,7 @@ app.post('/login', login)
    *  }
    */
 app.post('/order', FBAuth, placeOrder)
+app.post('/finished-tutorial', FBAuth, hasDoneTutorial)
 
 /**
  *  req.body schema: 
@@ -120,7 +122,10 @@ app.post('/order', FBAuth, placeOrder)
  *  of an account
 //  */
 
+// app.get('/perf', recordPerformanceFunc.performance)
+
 exports.api = functions.https.onRequest(app);
 exports.recordPerformance = functions.pubsub.schedule('30 17 * * *').onRun(() => {
+  console.log("Recording Performance");
   return recordPerformanceFunc.performance;
-})
+});
