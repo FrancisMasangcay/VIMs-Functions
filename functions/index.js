@@ -8,6 +8,10 @@ const functions = require("firebase-functions");
 const express = require('express');
 const app = express();
 
+const cors = require('cors');
+
+app.use(cors());
+
 const { json } = require('express');
 const { Message } = require('firebase-functions/lib/providers/pubsub');
 
