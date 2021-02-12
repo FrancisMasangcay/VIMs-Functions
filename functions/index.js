@@ -131,5 +131,6 @@ app.post('/finished-tutorial', FBAuth, hasDoneTutorial)
 exports.api = functions.https.onRequest(app);
 exports.recordPerformance = functions.pubsub.schedule('30 17 * * *').onRun(() => {
   console.log("Recording Performance");
-  return recordPerformanceFunc.performance;
+  let result = recordPerformanceFunc.performance();
+  return result;
 });

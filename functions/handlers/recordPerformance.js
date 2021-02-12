@@ -3,7 +3,8 @@ const { getQuote } = require('../util/helpers')
 
 module.exports = {
   performance: async (req, res) =>{
-    const users = await db.collection('users').get();
+    const users = await db.collection('users').get()
+      .catch((err) => {errors.general = `${err.message}`});
     let errors = {};
     for(let i = 0; i < users.size; i++){
       const userRef = users.docs[i].ref;
